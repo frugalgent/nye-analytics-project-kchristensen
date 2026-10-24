@@ -4,5 +4,5 @@
      created_date,
      complaint_type,
      borough
- FROM {{ source('raw', 'SOURCE-TABLE-NAME-HERE') }}
+ FROM {{ source('raw', 'source_nyc_311_dob') }}
  LIMIT 10
