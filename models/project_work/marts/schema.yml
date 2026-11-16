@@ -1,0 +1,76 @@
+version: 2
+
+# Tests run automatically with `dbt build`. They prove primary keys are unique / not null
+# and that every fact foreign key points at a real dimension row.
+
+models:
+  - name: shared_dim_date
+    description: Conformed date dimension (one row per date) + '-1' placeholder.
+    columns:
+      - name: date_key
+        data_tests: [unique, not_null]
+
+  - name: shared_dim_geography
+    description: Conformed geography dimension (borough / community district / zip) + '-1' placeholder.
+    columns:
+      - name: geography_key
+        data_tests: [unique, not_null]
+
+  - name: dm1_dim_permit_type
+    columns:
+      - name: permit_type_key
+        data_tests: [unique, not_null]
+
+  - name: dm1_dim_permittee
+    columns:
+      - name: permittee_key
+        data_tests: [unique, not_null]
+
+  - name: dm2_dim_complaint_type
+    columns:
+      - name: complaint_type_key
+        data_tests: [unique, not_null]
+
+  - name: dm1_fact_permit
+    description: One row per issued permit action.
+    columns:
+      - name: permit_key
+        data_tests: [unique, not_null]
+      - name: issuance_date_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('shared_dim_date')
+                field: date_key
+      - name: geography_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('shared_dim_geography')
+                field: geography_key
+      - name: permit_type_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dm1_dim_permit_type')
+                field: permit_type_key
+
+  - name: dm2_fact_dob_complaint
+    description: One row per DOB 311 service request.
+    columns:
+      - name: complaint_key
+        data_tests: [unique, not_null]
+      - name: created_date_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('shared_dim_date')
+                field: date_key
+      - name: complaint_type_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dm2_dim_complaint_type')
+                field: complaint_type_key

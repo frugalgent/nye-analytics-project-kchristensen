@@ -1,0 +1,16 @@
+version: 2
+
+sources:
+  - name: group14_raw
+    description: Raw NYC Open Data loaded by Cloud Functions (Milestone 3)
+    database: kevinchriste-cis-baruch
+    schema: group_14
+    tables:
+      - name: source_nyc_dob_permits
+        description: |
+          DOB Permit Issuance (ipu4-2q9a).
+          One row = one permit action on one work type for one job filing.
+      - name: source_nyc_311_dob
+        description: |
+          NYC 311 Service Requests 2020-present (erm2-nwe9), subset where agency = DOB.
+          One row = one service request.
